@@ -352,7 +352,7 @@ class InvoiceManager {
       } else {
         showError_("Please set your API key for using Gemini API.");
       }
-      const g = new GeminiWithFiles.geminiWithFiles(tempObj);
+      const g = new GeminiWithFiles(tempObj);
       const fileList = await g.setBlobs([blob], true).uploadFiles();
       const res = g.withUploadedFilesByGenerateContent(fileList).generateContent({ jsonSchema });
       g.deleteFiles(fileList.map(({ name }) => name));

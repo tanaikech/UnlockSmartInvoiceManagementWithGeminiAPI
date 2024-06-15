@@ -1,15 +1,6 @@
 {
   "timeZone": "Asia/Tokyo",
-  "dependencies": {
-    "libraries": [
-      {
-        "userSymbol": "GeminiWithFiles",
-        "version": "0",
-        "libraryId": "1dolXnIeXKz-BH1BlwRDaKhzC2smJcGyVxMxGYhaY2kqiLa857odLXrIC",
-        "developmentMode": true
-      }
-    ]
-  },
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "runtimeVersion": "V8",
+  "dependencies": {}
 }
