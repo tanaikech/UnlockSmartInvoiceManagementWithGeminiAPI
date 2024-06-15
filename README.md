@@ -57,6 +57,13 @@ Please copy a Google Spreadsheet including this application to your Google Drive
 
 [https://docs.google.com/spreadsheets/d/17UjnOcz8vyrpDI6pNhms4d2ZXAy6aWTYgmTkvZcuqaA/copy](https://docs.google.com/spreadsheets/d/17UjnOcz8vyrpDI6pNhms4d2ZXAy6aWTYgmTkvZcuqaA/copy)
 
+When you open the script editor of this Spreadsheet, you can see the following script files.
+
+- `main.gs`: This includes the main methods.
+- `InvoiceManager.gs`: This includes the main class object.
+- `GeminiWithFiles.gs`: This is from [GeminiWithFiles (Author: me)](https://github.com/tanaikech/GeminiWithFiles).
+- `PDFApp.gs`: This is from [PDFApp (Author: me)](https://github.com/tanaikech/PDFApp).
+
 ## 2. Create an API key
 
 Please access [https://ai.google.dev/gemini-api/docs/api-key](https://ai.google.dev/gemini-api/docs/api-key) and create your API key. At that time, please enable Generative Language API at the API console. This API key is used for this sample script.
