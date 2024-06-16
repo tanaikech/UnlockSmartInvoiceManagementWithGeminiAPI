@@ -4,6 +4,9 @@
  * GeminiWithFiles can upload files, generate content, and create descriptions
  * from multiple images at once.
  * This significantly reduces workload and expands possibilities for using Gemini.
+ * 
+ * GeminiWithFiles v1.0.6
+ * GitHub: https://github.com/tanaikech/GeminiWithFiles
  */
 class GeminiWithFiles {
 

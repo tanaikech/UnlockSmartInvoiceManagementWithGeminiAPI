@@ -1,4 +1,5 @@
 /**
+ * PDFApp v1.0.7
  * GitHub  https://github.com/tanaikech/PDFApp<br>
  * Library name
  * @type {string}
