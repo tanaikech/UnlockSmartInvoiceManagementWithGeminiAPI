@@ -80,6 +80,8 @@ Open the "configuration" sheet and enter your API key. If you want to use the ac
 
 By default, this application checks emails in the "INBOX" label that include invoices. To search emails from specific labels, set the label containing invoices to labelName. The script will then search for emails with that label.
 
+From v1.0.1, in order to easily customize the value of "jsonSchema" for generating content with Gemini API, I added it as a new sheet of "jsonSchema" sheet in the Spreadsheet. When you customize it, you can edit the cell "A1" of the "jsonSchema" sheet. By this, the script generates content with Gemini API using your customized JSON schema. The cell "A2" is the number of characters of "A1".
+
 ## 4. Testing
 
 Clicking the "START" button on the "Configuration" sheet runs the application's script. However, you might see "No emails were processed" in the dialog even after running the script. In this case, to test the application, please send an email to your account that includes an invoice as a PDF attachment. Then, click the "START" button again.
@@ -195,5 +197,9 @@ For invalid invoices, the application can automatically send an email response c
 - v1.0.0 (June 15, 2024)
 
   1. Initial release.
+
+- v1.0.1 (June 17, 2024)
+
+  1. In order to easily customize the value of "jsonSchema" for generating content with Gemini API, I added it as a new sheet of "jsonSchema" sheet in the Spreadsheet. When you customize it, you can edit the cell "A1" of the "jsonSchema" sheet. By this, the script generates content with Gemini API using your customized JSON schema. The cell "A2" is the number of characters of "A1".
 
 [TOP](#top)

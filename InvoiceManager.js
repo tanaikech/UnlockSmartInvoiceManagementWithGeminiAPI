@@ -40,10 +40,13 @@ class InvoiceManager {
     this.mainFunctionName = "main";
 
     /** @private */
-    this.notifyModificationpointsToSender = false;
+    this.configurationSheetName = "configuration";
 
     /** @private */
-    this.configurationSheetName = "configuration";
+    this.jsonSchemaSheetName = "jsonSchema";
+
+    /** @private */
+    this.notifyModificationpointsToSender = false;
 
     /** @private */
     this.logSheetName = "log";
@@ -58,6 +61,9 @@ class InvoiceManager {
     this.logSheet = null;
 
     /** @private */
+    this.jsonSchemaSheet = null;
+
+    /** @private */
     this.keys = ["apiKey", "useAccessToken", "model", "version", "labelName", "cycleMinTimeDrivenTrigger", "extraTime", "mainFunctionName", "notifyModificationpointsToSender"];
 
     /** @private */
@@ -68,6 +74,9 @@ class InvoiceManager {
 
     /** @private */
     this.rowColors = { doneRows: "#d9ead3", invalidRows: "#f4cccc", unrelatedRows: "#d9d9d9" };
+
+    /** @private */
+    this.jsonSchema = {};
 
   }
 
@@ -153,6 +162,7 @@ class InvoiceManager {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     this.dashboardSheet = ss.getSheetByName(this.configurationSheetName) || ss.insertSheet(this.configurationSheetName);
     this.logSheet = ss.getSheetByName(this.logSheetName) || ss.insertSheet(this.logSheetName);
+    this.jsonSchemaSheet = ss.getSheetByName(this.jsonSchemaSheetName) || ss.insertSheet(this.jsonSchemaSheetName);
     if (!this.dashboardSheet || !this.logSheet) {
       this.showError_("Sheet names are changed from the default names of 'dashboard' and 'log'. Please confirm them.");
     }
@@ -213,6 +223,75 @@ class InvoiceManager {
         this[ta] = tb ?? this[ta];
       }
     });
+    const jsonSchemaRange = this.jsonSchemaSheet.getRange("A1");
+    const jsonSchema = jsonSchemaRange.getDisplayValue();
+    if (!jsonSchema) {
+      this.jsonSchema = {
+        description: "About the invoices of the following files, check carefully, and create an array including an object that parses the following images of the invoices by pointing out the detailed improvement points in the invoice. Confirm by calculating 3 times whether the total amount of the invoice is correct. Furthermore, confirm whether the name, address, phone number, and the required fields are written in the invoice.",
+        type: "object",
+        properties: {
+          check: {
+            description: "Point out the improvement points in the invoice. Return the detailed imprivement points like details of invalid, insufficient, wrong, and miscalculated parts. Here, ignore the calculation of tax.",
+            type: "object",
+            properties: {
+              invoice: {
+                description: "If the file is an invoice, it's true. If the file is not an invoice, it's false.",
+                type: "boolean",
+              },
+              invalidCheck: {
+                description: "Details of invalid, insufficient, wrong, and miscalculated points of the invoice. When no issue was found, this should be false. When issues were found, this should be true.",
+                type: "boolean"
+              },
+              invalidPoints: {
+                description: "Details of invalid, insufficient, wrong, and miscalculated points of the invoice. When no issue was found, this should be no value.",
+                type: "string"
+              }
+            },
+            required: ["invoice", "invalidCheck"],
+            additionalProperties: false,
+          },
+          parse: {
+            description: "Create an object parsed the invoice.",
+            type: "object",
+            properties: {
+              name: { description: "Name given as 'Filename'", type: "string" },
+              invoiceTitle: { description: "Title of invoice", type: "string" },
+              invoiceDate: { description: "Date of invoice", type: "string" },
+              invoiceNumber: { description: "Number of the invoice", type: "string" },
+              invoiceDestinationName: { description: "Name of destination of invoice", type: "string" },
+              invoiceDestinationAddress: { description: "Address of the destination of invoice", type: "string" },
+              totalCost: { description: "Total cost of all costs", type: "string" },
+              table: {
+                description: "Table of the invoice. This is a 2-dimensional array. Add the first header row to the table in the 2-dimensional array. The column should be 'title or description of item', 'number of items', 'unit cost', 'total cost'",
+                type: "array",
+              },
+            },
+            required: [
+              "name",
+              "invoiceTitle",
+              "invoiceDate",
+              "invoiceNumber",
+              "invoiceDestinationName",
+              "invoiceDestinationAddress",
+              "totalCost",
+              "table",
+            ],
+            additionalProperties: false,
+          }
+        },
+        required: [
+          "check",
+          "parse",
+        ],
+        additionalProperties: false,
+      };
+    } else {
+      try {
+        this.jsonSchema = JSON.parse(jsonSchema);
+      } catch ({ stack }) {
+        this.showError_(stack);
+      }
+    }
     if (this.useAccessToken === true) {
       this.accessToken = ScriptApp.getOAuthToken();
     }
@@ -285,65 +364,6 @@ class InvoiceManager {
    */
   async parseInvoiceByGemini_(blob) {
     try {
-      const jsonSchema = {
-        description: "About the invoices of the following files, check carefully, and create an array including an object that parses the following images of the invoices by pointing out the detailed improvement points in the invoice. Confirm by calculating 3 times whether the total amount of the invoice is correct. Furthermore, confirm whether the name, address, phone number, and the required fields are written in the invoice.",
-        type: "object",
-        properties: {
-          check: {
-            description: "Point out the improvement points in the invoice. Return the detailed imprivement points like details of invalid, insufficient, wrong, and miscalculated parts. Here, ignore the calculation of tax.",
-            type: "object",
-            properties: {
-              invoice: {
-                description: "If the file is an invoice, it's true. If the file is not an invoice, it's false.",
-                type: "boolean",
-              },
-              invalidCheck: {
-                description: "Details of invalid, insufficient, wrong, and miscalculated points of the invoice. When no issue was found, this should be false. When issues were found, this should be true.",
-                type: "boolean"
-              },
-              invalidPoints: {
-                description: "Details of invalid, insufficient, wrong, and miscalculated points of the invoice. When no issue was found, this should be no value.",
-                type: "string"
-              }
-            },
-            required: ["invoice", "invalidCheck"],
-            additionalProperties: false,
-          },
-          parse: {
-            description: "Create an object parsed the invoice.",
-            type: "object",
-            properties: {
-              name: { description: "Name given as 'Filename'", type: "string" },
-              invoiceTitle: { description: "Title of invoice", type: "string" },
-              invoiceDate: { description: "Date of invoice", type: "string" },
-              invoiceNumber: { description: "Number of the invoice", type: "string" },
-              invoiceDestinationName: { description: "Name of destination of invoice", type: "string" },
-              invoiceDestinationAddress: { description: "Address of the destination of invoice", type: "string" },
-              totalCost: { description: "Total cost of all costs", type: "string" },
-              table: {
-                description: "Table of the invoice. This is a 2-dimensional array. Add the first header row to the table in the 2-dimensional array. The column should be 'title or description of item', 'number of items', 'unit cost', 'total cost'",
-                type: "array",
-              },
-            },
-            required: [
-              "name",
-              "invoiceTitle",
-              "invoiceDate",
-              "invoiceNumber",
-              "invoiceDestinationName",
-              "invoiceDestinationAddress",
-              "totalCost",
-              "table",
-            ],
-            additionalProperties: false,
-          }
-        },
-        required: [
-          "check",
-          "parse",
-        ],
-        additionalProperties: false,
-      };
       const tempObj = { model: this.model, version: this.version, response_mime_type: "application/json" };
       if (this.accessToken) {
         tempObj.accessToken = this.accessToken;
@@ -354,7 +374,7 @@ class InvoiceManager {
       }
       const g = new GeminiWithFiles(tempObj);
       const fileList = await g.setBlobs([blob], true).uploadFiles();
-      const res = g.withUploadedFilesByGenerateContent(fileList).generateContent({ jsonSchema });
+      const res = g.withUploadedFilesByGenerateContent(fileList).generateContent({ jsonSchema: this.jsonSchema });
       g.deleteFiles(fileList.map(({ name }) => name));
       return res;
     } catch ({ stack }) {
