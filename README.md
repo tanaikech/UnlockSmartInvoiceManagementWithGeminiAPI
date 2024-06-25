@@ -166,6 +166,11 @@ After processing the two invoices mentioned above, the application displays the 
 
 For invalid invoices, the application can automatically send an email response containing the necessary corrections. However, during my testing with various invoices, I encountered instances where the `invalidCheck` value was flagged as `true` even for invoices without errors. Due to this, I have temporarily set the `notifyModificationPointsToSender` value to `FALSE` by default. I anticipate the content generation accuracy to improve in future updates.
 
+
+# Applied Section
+When the method shown in this report is used, the parsing functionality can be extended to other document types besides invoices by modifying the JSON schema.
+
+
 # Future update
 
 - Currently, Gemini 1.5 API cannot directly use PDF data. As a workaround, this sample converts each page of the PDF data to PNG images. When direct PDF processing is available in a future update, I expect the accuracy for generating content to improve.
