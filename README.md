@@ -174,6 +174,7 @@ When the method shown in this report is used, the parsing functionality can be e
 # Future update
 
 - Currently, Gemini 1.5 API cannot directly use PDF data. As a workaround, this sample converts each page of the PDF data to PNG images. When direct PDF processing is available in a future update, I expect the accuracy for generating content to improve.
+	- On July 23, 2024, I confirmed that this was achieved. By this, I updated the script for directly using PDF data.
 
 # Note
 
@@ -206,5 +207,9 @@ When the method shown in this report is used, the parsing functionality can be e
 - v1.0.1 (June 17, 2024)
 
   1. In order to easily customize the value of "jsonSchema" for generating content with Gemini API, I added it as a new sheet of "jsonSchema" sheet in the Spreadsheet. When you customize it, you can edit the cell "A1" of the "jsonSchema" sheet. By this, the script generates content with Gemini API using your customized JSON schema. The cell "A2" is the number of characters of "A1".
+
+- v1.0.2 (July 23, 2024)
+
+  1. On July 23, 2024, I noticed that PDF data could be directly parsed by Gemini API. It is considered that this is due to the update by the Google side. So, I updated `setBlobs([blob], true)` to `setBlobs([blob], false)` of the method `parseInvoiceByGemini_`. By this modification, the PDF blob is directly used with Gemini API. [Ref](https://github.com/tanaikech/GeminiWithFiles?tab=readme-ov-file#setblobs)
 
 [TOP](#top)

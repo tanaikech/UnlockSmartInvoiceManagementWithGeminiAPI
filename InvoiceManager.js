@@ -373,7 +373,14 @@ class InvoiceManager {
         showError_("Please set your API key for using Gemini API.");
       }
       const g = new GeminiWithFiles(tempObj);
-      const fileList = await g.setBlobs([blob], true).uploadFiles();
+
+      // On July 23, 2024, I noticed that PDF data could be directly parsed by Gemini API.
+      // So, I updated setBlobs([blob], true) to setBlobs([blob], false)
+      // By this modification, the PDF blob is directly used with Gemini API.
+      // Ref: https://github.com/tanaikech/GeminiWithFiles?tab=readme-ov-file#setblobs
+      // const fileList = await g.setBlobs([blob], true).uploadFiles();
+      const fileList = await g.setBlobs([blob], false).uploadFiles();
+
       const res = g.withUploadedFilesByGenerateContent(fileList).generateContent({ jsonSchema: this.jsonSchema });
       g.deleteFiles(fileList.map(({ name }) => name));
       return res;
