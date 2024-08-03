@@ -211,5 +211,8 @@ When the method shown in this report is used, the parsing functionality can be e
 - v1.0.2 (July 23, 2024)
 
   1. On July 23, 2024, I noticed that PDF data could be directly parsed by Gemini API. It is considered that this is due to the update by the Google side. So, I updated `setBlobs([blob], true)` to `setBlobs([blob], false)` of the method `parseInvoiceByGemini_`. By this modification, the PDF blob is directly used with Gemini API. [Ref](https://github.com/tanaikech/GeminiWithFiles?tab=readme-ov-file#setblobs)
+- v1.0.3 (August 3, 2024)
+
+  1. On August 3, 2024, I upated GeminiWithFiles (https://github.com/tanaikech/GeminiWithFiles). In this version, PDF data can be processed with Gemini API without async/await. So, I updated UnlockSmartInvoiceManagementWithGeminiAPI.
 
 [TOP](#top)

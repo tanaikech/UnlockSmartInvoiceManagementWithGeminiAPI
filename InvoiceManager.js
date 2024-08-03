@@ -86,7 +86,7 @@ class InvoiceManager {
    *
    * @return {void}
    */
-  async run() {
+  run() {
     this.setTimeDrivenTriggers_();
     this.getSheets_();
     if (this.object && Object.keys(this.object).length > 0) {
@@ -110,7 +110,7 @@ class InvoiceManager {
       const pdfFilesLen = pdfFiles.length;
       for (let j = 0; j < pdfFilesLen; j++) {
         const blob = pdfFiles[j];
-        const o = await this.parseInvoiceByGemini_(blob);
+        const o = this.parseInvoiceByGemini_(blob);
         const prefix = [this.now, threadId, messageId, searchUrl, sender, subject];
         if (o.check.invoice == true && o.check.invalidCheck == false) {
           values.push([...prefix, true, true, null, JSON.stringify(o), null]);
@@ -362,7 +362,7 @@ class InvoiceManager {
    * @returns {object} Generated content as a JSON object.
    * @private
    */
-  async parseInvoiceByGemini_(blob) {
+  parseInvoiceByGemini_(blob) {
     try {
       const tempObj = { model: this.model, version: this.version, response_mime_type: "application/json" };
       if (this.accessToken) {
@@ -374,12 +374,9 @@ class InvoiceManager {
       }
       const g = new GeminiWithFiles(tempObj);
 
-      // On July 23, 2024, I noticed that PDF data could be directly parsed by Gemini API.
-      // So, I updated setBlobs([blob], true) to setBlobs([blob], false)
-      // By this modification, the PDF blob is directly used with Gemini API.
-      // Ref: https://github.com/tanaikech/GeminiWithFiles?tab=readme-ov-file#setblobs
-      // const fileList = await g.setBlobs([blob], true).uploadFiles();
-      const fileList = await g.setBlobs([blob], false).uploadFiles();
+      // On August 3, 2024, I updated GeminiWithFiles (https://github.com/tanaikech/GeminiWithFiles).
+      // By this, PDF data can be directly used with Gemini API without async/await.
+      const fileList = g.setBlobs([blob]).uploadFiles();
 
       const res = g.withUploadedFilesByGenerateContent(fileList).generateContent({ jsonSchema: this.jsonSchema });
       g.deleteFiles(fileList.map(({ name }) => name));
